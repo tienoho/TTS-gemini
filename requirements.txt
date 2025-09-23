@@ -1,0 +1,100 @@
+# Core Flask dependencies
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# Database
+SQLAlchemy==2.0.21
+Flask-SQLAlchemy==3.0.5
+Flask-Migrate==4.0.5
+psycopg2-binary==2.9.7
+alembic==1.12.0
+
+# Authentication & Security
+Flask-JWT-Extended==4.5.3
+Flask-Limiter==3.5.0
+Flask-CORS==4.0.0
+bcrypt==4.0.1
+python-dotenv==1.0.0
+cryptography==41.0.4
+
+# Data validation
+pydantic==2.4.2
+pydantic-settings==2.0.3
+email-validator==2.0.0
+
+# Caching & Redis
+Flask-Caching==2.1.0
+redis==5.0.1
+redis[hiredis]==5.0.1
+aioredis==2.0.1
+
+# Background Workers
+celery==5.3.4
+flower==2.0.1
+
+# Audio processing
+google-genai==0.6.0
+google-generativeai==0.8.3
+pydub==0.25.1
+pybreaker==1.0.1
+tenacity==8.2.3
+
+# Cloud Storage
+boto3==1.28.57
+google-cloud-storage==2.10.0
+
+# Monitoring & Logging
+Flask-MonitoringDashboard==3.1.4
+structlog==23.1.0
+prometheus-client==0.17.1
+prometheus-flask-exporter==0.22.4
+
+# Circuit Breaker & Resilience
+pybreaker==1.0.1
+
+# Development & Testing
+pytest==7.4.2
+pytest-flask==1.2.0
+pytest-cov==4.1.0
+pytest-mock==3.11.1
+pytest-asyncio==0.21.1
+pytest-xdist==3.3.1
+locust==2.16.1
+
+# Code quality
+black==23.9.1
+isort==5.12.0
+flake8==6.1.0
+mypy==1.5.1
+pre-commit==3.4.0
+
+# Documentation
+Flask-Swagger-UI==4.11.1
+mkdocs==1.5.3
+mkdocs-material==9.2.8
+
+# Utilities
+python-multipart==0.0.6
+marshmallow==3.20.1
+python-dateutil==2.8.2
+requests==2.31.0
+httpx==0.24.1
+tenacity==8.2.3
+
+# Async support
+asyncio==3.4.3
+aiofiles==23.2.1
+aiohttp==3.8.5
+
+# File handling
+Pillow==10.0.1
+
+# Performance & Profiling
+memory-profiler==0.61.0
+line-profiler==4.1.2
+
+# Environment types
+types-redis==4.6.0.5
+types-requests==2.31.0.2
+types-python-dateutil==2.8.19.14
+types-boto3==1.28.57

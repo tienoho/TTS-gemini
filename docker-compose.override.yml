@@ -1,0 +1,37 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+# This file is automatically loaded by docker-compose and provides development-specific settings
+
+services:
+  app:
+    # Mount source code for development
+    volumes:
+      - .:/app
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    # Override environment for development
+    environment:
+      - FLASK_ENV=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+    # Enable auto-reload for development
+    command: ["python", "app/main.py"]
+
+  # Development database with persistent data
+  db:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  # Development Redis with persistent data
+  redis:
+    volumes:
+      - redis_data:/data
+
+# Development-specific volumes
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

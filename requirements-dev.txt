@@ -1,0 +1,50 @@
+# Development dependencies (not for production)
+-r requirements.txt
+
+# Additional development tools
+pytest-django==4.5.2
+pytest-html==4.0.2
+pytest-benchmark==4.0.0
+pytest-profiling==1.7.0
+
+# API testing
+httpx==0.24.1
+pytest-httpx==0.22.0
+
+# Load testing
+locust==2.16.1
+
+# Code coverage and quality
+coverage[toml]==7.3.0
+bandit==1.7.5
+safety==2.3.5
+
+# Documentation generation
+mkdocs==1.5.3
+mkdocs-material==9.2.8
+pydoc-markdown==4.8.2
+
+# Development server
+gunicorn==21.2.0
+uvicorn[standard]==0.23.2
+
+# Debugging
+ipdb==0.13.13
+pdbpp==0.10.3
+
+# Environment management
+pip-tools==7.3.0
+
+# Performance monitoring
+py-spy==0.3.14
+memory-profiler==0.61.0
+line-profiler==4.1.2
+
+# Database tools
+pgcli==3.5.0
+
+# Redis tools
+redis-cli
+
+# Docker tools
+docker-compose==1.29.2

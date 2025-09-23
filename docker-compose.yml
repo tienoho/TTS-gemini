@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # Flask Application
+  app:
+    build: .
+    container_name: flask-tts-api
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=development
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - DATABASE_URL=postgresql://tts_user:tts_password@db:5432/tts_api
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-your-jwt-secret-key}
+      - SECRET_KEY=${SECRET_KEY:-your-flask-secret-key}
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    depends_on:
+      - db
+      - redis
+    networks:
+      - tts-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: tts-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=tts_api
+      - POSTGRES_USER=tts_user
+      - POSTGRES_PASSWORD=tts_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - tts-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tts_user -d tts_api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: tts-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - tts-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Commander (Web UI for Redis)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: tts-redis-commander
+    restart: unless-stopped
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - tts-network
+
+  # Monitoring Dashboard
+  monitoring:
+    image: flask-monitoring-dashboard:latest
+    container_name: tts-monitoring
+    restart: unless-stopped
+    environment:
+      - FLASK_APP=app.main:create_app
+      - FLASK_ENV=development
+    ports:
+      - "8080:8080"
+    depends_on:
+      - app
+    networks:
+      - tts-network
+
+networks:
+  tts-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
