@@ -1,0 +1,453 @@
+# =============================================================================
+# COMPREHENSIVE .GITIGNORE FILE FOR TTS-GEMINI PROJECT
+# =============================================================================
+# This .gitignore file contains comprehensive patterns for ignoring files and
+# directories that should not be tracked in version control. Each section is
+# clearly marked with detailed explanations.
+
+# =============================================================================
+# ENVIRONMENT AND CONFIGURATION FILES
+# =============================================================================
+# Sensitive configuration files containing API keys, passwords, and secrets
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.testing
+
+# Configuration files that may contain sensitive data
+config/local_settings.py
+config/production_settings.py
+settings_local.py
+
+# =============================================================================
+# PYTHON-SPECIFIC FILES AND DIRECTORIES
+# =============================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# =============================================================================
+# IDE AND EDITOR FILES
+# =============================================================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm / IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+*.sublime-session
+
+# Vim
+*.swp
+*.swo
+*~
+Session.vim
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Atom
+.atom/
+
+# Eclipse
+.project
+.pydevproject
+.settings/
+
+# =============================================================================
+# OPERATING SYSTEM FILES
+# =============================================================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# LOG FILES AND TEMPORARY FILES
+# =============================================================================
+# Application logs
+*.log
+logs/
+log/
+app.log
+error.log
+access.log
+debug.log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+
+# Cache directories
+.cache/
+tmp/
+temp/
+
+# =============================================================================
+# DATABASE FILES
+# =============================================================================
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# PostgreSQL
+*.pid
+*.seed
+*.pid.lock
+
+# MongoDB
+*.wt
+
+# Redis
+dump.rdb
+appendonly.aof
+
+# =============================================================================
+# BUILD ARTIFACTS AND DEPLOYMENT
+# =============================================================================
+# Docker
+.docker/
+
+# Node.js (if used for frontend tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =============================================================================
+# SECURITY AND AUDIT FILES
+# =============================================================================
+# Security audit reports (keep source files but ignore generated reports)
+security_audit_report.md
+security_fixes_summary.md
+
+# Vulnerability reports
+*.vulnerability-report
+security-scan-results/
+
+# =============================================================================
+# DEVELOPMENT AND TESTING
+# =============================================================================
+# Test coverage reports
+htmlcov/
+coverage_html_report/
+.coverage.*
+
+# Test results
+test-results/
+junit.xml
+pytest-report.html
+
+# Debugging files
+debug.log
+*.pkl
+*.pickle
+
+# =============================================================================
+# MEDIA AND UPLOAD FILES
+# =============================================================================
+# Audio files (processed/generated)
+*.mp3
+*.wav
+*.flac
+*.ogg
+*.m4a
+uploads/
+media/
+static/audio/
+
+# User uploaded content
+user_uploads/
+temp_audio/
+processed_audio/
+
+# =============================================================================
+# BACKUP AND ARCHIVE FILES
+# =============================================================================
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.tar
+*.gz
+*.bz2
+*.xz
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+
+# =============================================================================
+# MISCELLANEOUS
+# =============================================================================
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for instrumented libs generated by jscoverage/JSCover
+lib-cov
+
+# Coverage directory used by tools like istanbul
+lib-cov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Bower dependency directory
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons
+build/Release
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript v1 declaration files
+typings/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env.test
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Editor directories and files
+!.vscode/extensions.json
+.history/*
+
+# Local Netlify folder
+.netlify
+
+# =============================================================================
+# PROJECT-SPECIFIC PATTERNS
+# =============================================================================
+# TTS-Gemini specific temporary files
+ai_studio_code.py
+temp_*.py
+debug_*.py
+
+# Batch processing temporary files
+batch_temp_/
+temp_batches/
+
+# Voice cloning temporary files
+voice_temp_/
+cloned_voices_temp/
+
+# Analytics temporary files
+analytics_cache/
+bi_temp_/
+
+# =============================================================================
+# END OF .GITIGNORE FILE
+# =============================================================================
+# Note: This .gitignore file is comprehensive but may need to be updated
+# as the project evolves. Always review before adding new file types.
