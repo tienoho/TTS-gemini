@@ -15,7 +15,7 @@ from models import Plugin, PluginStatus, PluginType
 from utils.plugin_manager import plugin_manager
 from utils.plugin_security import security_manager
 from utils.validators import sanitize_error_message
-from config import plugin_config
+from config.plugin import plugin_config
 
 plugin_bp = Blueprint('plugin', __name__, url_prefix='/api/v1/plugins')
 

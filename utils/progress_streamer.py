@@ -117,12 +117,21 @@ class ProgressStreamingService:
         self._cleanup_task = None
         self._event_listeners: Dict[str, List[Callable]] = {}
 
-        # Start background cleanup task
-        self._start_background_tasks()
+        # Background cleanup task - will be started when needed
+        self._cleanup_task = None
+        self._tasks_started = False
 
     def _start_background_tasks(self):
         """Start background cleanup task."""
-        self._cleanup_task = asyncio.create_task(self._cleanup_inactive_trackers())
+        if not self._tasks_started:
+            try:
+                # Only start if event loop is running
+                loop = asyncio.get_running_loop()
+                self._cleanup_task = loop.create_task(self._cleanup_inactive_trackers())
+                self._tasks_started = True
+            except RuntimeError:
+                # No event loop running, tasks will be started later
+                pass
 
     async def _cleanup_inactive_trackers(self):
         """Background task to cleanup inactive progress trackers."""

@@ -126,20 +126,66 @@ class SecurityUtils:
         Returns:
             True if text appears safe
         """
+        if not isinstance(text, str):
+            return False
+
         dangerous_patterns = [
-            r'(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)',
+            # Basic SQL keywords
+            r'(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|SCRIPT|TRUNCATE)\b)',
+            # Comments
             r'(--|#|/\*|\*/)',
+            # Tautology patterns
             r'(\bor\b\s+\d+\s*=\s*\d+)',
             r'(\band\b\s+\d+\s*=\s*\d+)',
+            # Time-based attacks
             r'(\bwaitfor\b\s+delay)',
+            r'(\bsleep\b\s*\()',
+            r'(\bbenchmark\b\s*\()',
+            # System commands
             r'(\bxp_cmdshell\b)',
-            r'(;\s*(select|insert|update|delete|drop|create|alter|exec|union))',
+            r'(\bsp_configure\b)',
+            # Semicolon followed by SQL commands
+            r'(;\s*(select|insert|update|delete|drop|create|alter|exec|union|truncate))',
+            # Stacked queries
+            r'(\bgo\b\s*;?\s*(select|insert|update|delete|drop|create|alter|exec|union))',
+            # Hex encoding
+            r'(0x[0-9a-fA-F]{2,})',
+            # Information schema access
+            r'(\binformation_schema\b)',
+            r'(\bsys\.objects\b)',
+            r'(\bsys\.tables\b)',
+            # Dangerous functions
+            r'(\bload_file\b)',
+            r'(\boutfile\b)',
+            # Case variations
+            r'(\bselect\b.*\bfrom\b)',
+            r'(\bunion\b.*\bselect\b)',
         ]
 
         text_lower = text.lower()
         for pattern in dangerous_patterns:
-            if re.search(pattern, text_lower, re.IGNORECASE):
+            if re.search(pattern, text_lower, re.IGNORECASE | re.MULTILINE):
                 return False
+
+        # Additional checks for suspicious patterns
+        suspicious_chars = [';', '--', '/*', '*/', 'xp_', 'sp_', '0x']
+        for char in suspicious_chars:
+            if char in text_lower:
+                # More context-aware checking
+                if char == ';':
+                    # Allow semicolons in reasonable contexts (not followed by SQL keywords)
+                    if re.search(r';\s*(select|insert|update|delete|drop|create|alter|exec|union)\b', text_lower, re.IGNORECASE):
+                        return False
+                elif char in ['--', '/*', '*/']:
+                    # Comments are generally suspicious in input
+                    return False
+                elif char in ['xp_', 'sp_']:
+                    # System stored procedures
+                    return False
+                elif char == '0x':
+                    # Hex encoding might be used to bypass filters
+                    if len(re.findall(r'0x[0-9a-fA-F]{4,}', text_lower)) > 0:
+                        return False
 
         return True
 

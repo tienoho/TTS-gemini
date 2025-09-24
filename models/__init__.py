@@ -3,7 +3,7 @@ Database models for Flask TTS API with production-ready features
 """
 
 from .user import User
-from .audio_request import AudioRequest
+from .audio_request import AudioRequest, AudioRequestPriority
 from .audio_file import AudioFile
 from .request_log import RequestLog
 from .rate_limit import RateLimit
@@ -48,10 +48,19 @@ from .plugin import (
     PluginPermission as PluginPermissionEnum,
     PluginType
 )
+from .business_intelligence import (
+    RevenueStream,
+    CustomerJourney,
+    BusinessKPI,
+    UsagePattern,
+    FinancialProjection,
+    BusinessInsight
+)
 
 __all__ = [
     'User',
     'AudioRequest',
+    'AudioRequestPriority',
     'AudioFile',
     'RequestLog',
     'RateLimit',
@@ -87,5 +96,11 @@ __all__ = [
     'PluginLog',
     'PluginStatus',
     'PluginPermission as PluginPermissionEnum',
-    'PluginType'
+    'PluginType',
+    'RevenueStream',
+    'CustomerJourney',
+    'BusinessKPI',
+    'UsagePattern',
+    'FinancialProjection',
+    'BusinessInsight'
 ]

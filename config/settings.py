@@ -3,9 +3,9 @@ Application settings with Pydantic
 """
 
 import os
-from typing import Optional, List
+from typing import Optional, List, Annotated
 from pydantic_settings import BaseSettings
-from pydantic import Field, validator
+from pydantic import Field
 
 
 class Settings(BaseSettings):
@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     # Server
     HOST: str = Field(default="0.0.0.0", env="HOST")
-    PORT: int = Field(default=8000, env="PORT")
+    PORT: int = Field(default=5000, env="PORT")
     WORKERS: int = Field(default=4, env="WORKERS")
 
     # Database
@@ -59,10 +59,7 @@ class Settings(BaseSettings):
 
     # File Storage
     MAX_FILE_SIZE_MB: int = Field(default=50, env="MAX_FILE_SIZE_MB")
-    ALLOWED_AUDIO_FORMATS: List[str] = Field(
-        default=["mp3", "wav", "flac", "ogg"],
-        env="ALLOWED_AUDIO_FORMATS"
-    )
+    ALLOWED_AUDIO_FORMATS: List[str] = ["mp3", "wav", "flac", "ogg"]
     UPLOAD_FOLDER: str = Field(default="uploads", env="UPLOAD_FOLDER")
     OUTPUT_FOLDER: str = Field(default="outputs", env="OUTPUT_FOLDER")
 
@@ -86,12 +83,9 @@ class Settings(BaseSettings):
     PROMETHEUS_ENABLED: bool = Field(default=True, env="PROMETHEUS_ENABLED")
     SENTRY_DSN: Optional[str] = Field(default=None, env="SENTRY_DSN")
 
-    # Security
-    CORS_ORIGINS: List[str] = Field(
-        default=["http://localhost:3000", "http://localhost:8080"],
-        env="CORS_ORIGINS"
-    )
-    CORS_CREDENTIALS: bool = Field(default=True, env="CORS_CREDENTIALS")
+    # Security  
+    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8080"]
+    CORS_CREDENTIALS: bool = True
 
     # Logging
     LOG_LEVEL: str = Field(default="INFO", env="LOG_LEVEL")
@@ -103,6 +97,33 @@ class Settings(BaseSettings):
     ENABLE_METRICS: bool = Field(default=True, env="ENABLE_METRICS")
     ENABLE_HEALTH_CHECKS: bool = Field(default=True, env="ENABLE_HEALTH_CHECKS")
     ENABLE_API_DOCS: bool = Field(default=True, env="ENABLE_API_DOCS")
+    ENABLE_MONITORING: bool = Field(default=False, env="ENABLE_MONITORING")
+
+    # CORS Settings
+    cors_methods_internal: str = Field(
+        default="GET,POST,PUT,DELETE,OPTIONS",
+        env="CORS_METHODS",
+        alias="CORS_METHODS"
+    )
+    cors_headers_internal: str = Field(
+        default="Content-Type,Authorization,X-Requested-With",
+        env="CORS_HEADERS",
+        alias="CORS_HEADERS"
+    )
+
+    @property
+    def CORS_METHODS(self) -> List[str]:
+        """Get CORS methods as list."""
+        return [i.strip() for i in self.cors_methods_internal.split(",")]
+
+    @property
+    def CORS_HEADERS(self) -> List[str]:
+        """Get CORS headers as list."""
+        return [i.strip() for i in self.cors_headers_internal.split(",")]
+
+    # Environment
+    TESTING: bool = Field(default=False, env="TESTING")
+    COMPOSE_PROJECT_NAME: str = Field(default="tts-api-dev", env="COMPOSE_PROJECT_NAME")
 
     # Worker Settings
     CELERY_BROKER_URL: str = Field(
@@ -133,21 +154,7 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
         case_sensitive = False
 
-    @validator("CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v):
-        """Parse CORS origins from environment variable."""
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, list):
-            return v
-        return ["http://localhost:3000", "http://localhost:8080"]
 
-    @validator("ALLOWED_AUDIO_FORMATS", pre=True)
-    def assemble_audio_formats(cls, v):
-        """Parse allowed audio formats from environment variable."""
-        if isinstance(v, str):
-            return [i.strip().lower() for i in v.split(",")]
-        return v
 
     @property
     def is_development(self) -> bool:
@@ -177,3 +184,77 @@ def reload_settings() -> Settings:
     global _settings
     _settings = Settings()
     return _settings
+
+
+class PluginConfig(BaseSettings):
+    """Plugin configuration settings."""
+
+    # Flask Application
+    flask_app: str = Field(default="app", env="FLASK_APP")
+    flask_env: str = Field(default="development", env="FLASK_ENV")
+
+    # Security
+    secret_key: str = Field(default="your-plugin-secret-key", env="SECRET_KEY")
+    jwt_secret_key: str = Field(default="your-plugin-jwt-secret", env="JWT_SECRET_KEY")
+    jwt_access_token_expires: int = Field(default=30, env="JWT_ACCESS_TOKEN_EXPIRES")
+    jwt_refresh_token_expires: int = Field(default=7, env="JWT_REFRESH_TOKEN_EXPIRES")
+
+    # Database
+    database_url: str = Field(
+        default="postgresql://plugin_user:plugin_password@localhost/plugin_db",
+        env="DATABASE_URL"
+    )
+
+    # Redis
+    redis_url: str = Field(
+        default="redis://localhost:6379/0",
+        env="REDIS_URL"
+    )
+
+    # Gemini API
+    gemini_api_key: str = Field(default="", env="GEMINI_API_KEY")
+
+    # File Configuration
+    max_audio_file_size: int = Field(default=50, env="MAX_AUDIO_FILE_SIZE")  # MB
+    supported_audio_formats: str = Field(default="mp3,wav,flac,ogg", env="SUPPORTED_AUDIO_FORMATS")
+    default_voice_name: str = Field(default="default", env="DEFAULT_VOICE_NAME")
+    max_text_length: int = Field(default=5000, env="MAX_TEXT_LENGTH")
+    upload_folder: str = Field(default="uploads", env="UPLOAD_FOLDER")
+    max_content_length: int = Field(default=52428800, env="MAX_CONTENT_LENGTH")  # 50MB
+
+    # Rate Limiting
+    rate_limit_per_minute: int = Field(default=60, env="RATE_LIMIT_PER_MINUTE")
+    rate_limit_premium_per_minute: int = Field(default=120, env="RATE_LIMIT_PREMIUM_PER_MINUTE")
+
+    # Logging
+    log_level: str = Field(default="INFO", env="LOG_LEVEL")
+    log_file: str = Field(default="plugin.log", env="LOG_FILE")
+    log_max_size: int = Field(default=10485760, env="LOG_MAX_SIZE")  # 10MB
+    log_backup_count: int = Field(default=5, env="LOG_BACKUP_COUNT")
+
+    # CORS
+    cors_origins: str = Field(default="http://localhost:3000,http://localhost:8080", env="CORS_ORIGINS")
+    cors_methods: str = Field(default="GET,POST,PUT,DELETE,OPTIONS", env="CORS_METHODS")
+    cors_headers: str = Field(default="Content-Type,Authorization,X-Requested-With", env="CORS_HEADERS")
+
+    # Environment
+    debug: bool = Field(default=False, env="DEBUG")
+    testing: bool = Field(default=False, env="TESTING")
+    compose_project_name: str = Field(default="tts-plugin-dev", env="COMPOSE_PROJECT_NAME")
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+        case_sensitive = False
+
+
+
+    @property
+    def is_development(self) -> bool:
+        """Check if running in development mode."""
+        return self.debug or self.flask_env == "development"
+
+    @property
+    def is_production(self) -> bool:
+        """Check if running in production mode."""
+        return not self.is_development

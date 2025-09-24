@@ -15,8 +15,8 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Type, Union
 from dataclasses import dataclass, field
 from weakref import WeakKeyDictionary
 
-from ..config.plugin import plugin_config
-from ..models.plugin import Plugin, PluginStatus, PluginType, PluginDependency, PluginLog
+from config.plugin import plugin_config
+from models.plugin import Plugin, PluginStatus, PluginType, PluginDependency, PluginLog
 from .plugin_interface import (
     PluginBase, PluginRegistry, PluginFactory, plugin_registry,
     initialize_plugin, cleanup_plugin, get_plugin_by_name

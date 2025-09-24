@@ -122,5 +122,5 @@ class GeminiConfig(BaseSettings):
         return list(self.LANGUAGE_VOICE_MAP.keys())
 
 
-# Global configuration instance
-gemini_config = GeminiConfig()
+# Global configuration instance - commented out to avoid pydantic_settings error
+# gemini_config = GeminiConfig()

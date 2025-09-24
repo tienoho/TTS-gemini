@@ -10,8 +10,8 @@ from contextlib import contextmanager
 from functools import wraps
 
 from flask import request, g
-from ..config import get_settings
-from ..models import RequestLog, SystemMetric
+from config.simple_settings import get_simple_settings
+from models import RequestLog, SystemMetric
 from .redis_manager import redis_manager
 
 
@@ -19,7 +19,7 @@ class LoggingService:
     """Comprehensive logging service for TTS API."""
 
     def __init__(self):
-        self.settings = get_settings()
+        self.settings = get_simple_settings()
         self.logger = logging.getLogger(__name__)
 
     def log_request(

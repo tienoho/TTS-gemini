@@ -66,7 +66,7 @@ class AudioRequest(Base):
     error_code = Column(String(50), nullable=True)
 
     # Custom metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
@@ -184,7 +184,7 @@ class AudioRequest(Base):
 
     def is_expired(self, max_age_hours: int = 24) -> bool:
         """Check if request has expired."""
-        if self.status in [AudioRequestStatus.COMPLETED, AudioRequestStatus.FAILED]:
+        if self.status in [AudioRequestStatus.COMPLETED, AudioRequestStatus.FAILED, AudioRequestStatus.CANCELLED]:
             return False
 
         age = datetime.utcnow() - self.created_at
@@ -230,7 +230,7 @@ class AudioRequest(Base):
             'storage_cost': self.storage_cost,
             'is_public': self.is_public,
             'allow_download': self.allow_download,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
             'started_at': self.started_at.isoformat() if self.started_at else None,
@@ -270,7 +270,7 @@ class AudioRequest(Base):
             priority=data.get('priority', AudioRequestPriority.NORMAL),
             output_format=data.get('output_format', 'mp3'),
             storage_type=data.get('storage_type', 'local'),
-            metadata=data.get('metadata', {}),
+            request_metadata=data.get('metadata', {}),
             is_public=data.get('is_public', False),
             allow_download=data.get('allow_download', True)
         )
@@ -367,30 +367,4 @@ class AudioRequest(Base):
             'total_storage_cost': float(stats.total_storage_cost) if stats.total_storage_cost else 0.0,
             'total_cost': float(stats.total_processing_cost or 0) + float(stats.total_storage_cost or 0),
             'avg_retry_count': float(stats.avg_retry_count) if stats.avg_retry_count else 0.0,
-        }
-
-    @staticmethod
-    def get_user_stats(user_id: int, db_session) -> dict:
-        """Get statistics for user's audio requests."""
-        if not user_id or user_id <= 0:
-            raise ValueError("Invalid user_id provided")
-
-        from sqlalchemy import func
-
-        stats = db_session.query(
-            func.count(AudioRequest.id).label('total'),
-            func.sum(func.case((AudioRequest.status == AudioRequestStatus.COMPLETED, 1), else_=0)).label('completed'),
-            func.sum(func.case((AudioRequest.status == AudioRequestStatus.FAILED, 1), else_=0)).label('failed'),
-            func.sum(func.case((AudioRequest.status == AudioRequestStatus.PROCESSING, 1), else_=0)).label('processing'),
-            func.sum(func.case((AudioRequest.status == AudioRequestStatus.PENDING, 1), else_=0)).label('pending'),
-            func.avg(AudioRequest.processing_time).label('avg_processing_time')
-        ).filter(AudioRequest.user_id == user_id).first()
-
-        return {
-            'total_requests': stats.total or 0,
-            'completed': stats.completed or 0,
-            'failed': stats.failed or 0,
-            'processing': stats.processing or 0,
-            'pending': stats.pending or 0,
-            'avg_processing_time': float(stats.avg_processing_time) if stats.avg_processing_time else 0.0,
         }

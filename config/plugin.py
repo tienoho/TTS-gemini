@@ -148,6 +148,7 @@ class PluginConfig(BaseSettings):
         """Pydantic configuration."""
         env_file = '.env'
         case_sensitive = False
+        extra = 'ignore'  # Ignore extra fields not defined in the model
 
     def get_plugin_path(self, plugin_name: str) -> str:
         """Get full path for a plugin."""

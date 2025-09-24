@@ -7,15 +7,15 @@ from typing import Dict, Any, Optional
 from flask import request
 from flask_socketio import emit, join_room, leave_room
 
-from ..config.websocket import get_websocket_settings
-from ..utils.websocket_manager import get_websocket_manager
-from ..utils.progress_streamer import (
+from config.websocket import get_websocket_settings
+from utils.websocket_manager import get_websocket_manager
+from utils.progress_streamer import (
     get_progress_streamer,
     subscribe_to_request,
     unsubscribe_from_request,
     ProgressStatus
 )
-from ..utils.auth import auth_service
+from utils.auth import auth_service
 
 
 # WebSocket event handlers
@@ -414,5 +414,3 @@ def emit_to_user(user_id: int, event: str, data: Any):
         asyncio.create_task(broadcast_to_user(user_id, event, data))
     except Exception as e:
         print(f"Error emitting to user {user_id}: {e}")
-</content>
-</line_count>

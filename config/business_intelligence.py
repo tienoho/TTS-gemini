@@ -53,6 +53,7 @@ class BusinessIntelligenceConfig(BaseSettings):
         """Pydantic configuration."""
         env_file = '.env'
         case_sensitive = False
+        extra = 'allow'  # Allow extra fields from environment variables
 
     def __init__(self, **data):
         super().__init__(**data)

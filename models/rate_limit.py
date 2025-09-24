@@ -50,7 +50,7 @@ class RateLimit(Base):
     window_end = Column(DateTime, nullable=False)
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -163,7 +163,7 @@ class RateLimit(Base):
             'window_end': self.window_end.isoformat() if self.window_end else None,
             'reset_seconds': self.get_seconds_until_reset(),
             'is_under_limit': self.is_under_limit(),
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
         }

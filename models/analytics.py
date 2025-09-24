@@ -77,7 +77,7 @@ class UsageMetric(Base):
     tokens_used = Column(Integer, default=0)  # API tokens consumed
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Indexes for performance
@@ -110,7 +110,7 @@ class UsageMetric(Base):
             'throughput': self.throughput,
             'estimated_cost': self.estimated_cost,
             'tokens_used': self.tokens_used,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -156,7 +156,7 @@ class UserBehavior(Base):
     retention_category = Column(String(20), default='new')  # new, returning, loyal
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -192,7 +192,7 @@ class UserBehavior(Base):
             'engagement_score': self.engagement_score,
             'conversion_events': self.conversion_events,
             'retention_category': self.retention_category,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
         }
@@ -242,7 +242,7 @@ class PerformanceMetric(Base):
     cache_size_mb = Column(Float, default=0.0)
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Indexes
@@ -278,7 +278,7 @@ class PerformanceMetric(Base):
             'voice_cloning_success_rate': self.voice_cloning_success_rate,
             'cache_hit_rate': self.cache_hit_rate,
             'cache_size_mb': self.cache_size_mb,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -328,7 +328,7 @@ class BusinessMetric(Base):
     tier = Column(String(20), index=True)  # Organization tier
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Indexes
@@ -365,7 +365,7 @@ class BusinessMetric(Base):
             'conversion_rate_percent': self.conversion_rate_percent,
             'organization_id': self.organization_id,
             'tier': self.tier,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -416,7 +416,7 @@ class TimeSeriesData(Base):
 
     # Metadata
     labels = Column(JSON, default=dict)  # Additional dimensions
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Indexes
@@ -455,7 +455,7 @@ class TimeSeriesData(Base):
             'anomaly_score': self.anomaly_score,
             'anomaly_confidence': self.anomaly_confidence,
             'labels': self.labels,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -496,7 +496,7 @@ class AnalyticsAlert(Base):
     # Alert metadata
     description = Column(Text, nullable=True)
     resolution_notes = Column(Text, nullable=True)
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
 
     # Notification settings
     notification_channels = Column(JSON, default=list)  # email, slack, webhook
@@ -535,7 +535,7 @@ class AnalyticsAlert(Base):
             'user_id': self.user_id,
             'description': self.description,
             'resolution_notes': self.resolution_notes,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'notification_channels': self.notification_channels,
             'notification_sent': self.notification_sent,
             'created_at': self.created_at.isoformat() if self.created_at else None,

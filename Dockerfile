@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy requirements và cài đặt Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Production stage
 FROM python:3.11-slim
@@ -33,7 +33,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy installed packages từ builder stage
-COPY --from=builder /root/.local /root/.local
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
 COPY . .
@@ -43,8 +44,6 @@ RUN useradd --create-home --shell /bin/bash app \
     && chown -R app:app /app
 USER app
 
-# Add local bin to PATH
-ENV PATH=/root/.local/bin:$PATH
 
 # Create necessary directories
 RUN mkdir -p uploads/audio logs
@@ -53,6 +52,7 @@ RUN mkdir -p uploads/audio logs
 ENV FLASK_ENV=development
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONPATH=/app:$PYTHONPATH
 
 # Expose port
 EXPOSE 5000

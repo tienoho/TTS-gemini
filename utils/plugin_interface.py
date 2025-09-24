@@ -15,8 +15,8 @@ from enum import Enum
 from dataclasses import dataclass, field
 from weakref import WeakKeyDictionary
 
-from ..models.plugin import Plugin, PluginStatus, PluginType, PluginPermission
-from ..config.plugin import plugin_config
+from models.plugin import Plugin, PluginStatus, PluginType, PluginPermission
+from config.plugin import plugin_config
 
 
 class HookType(str, Enum):

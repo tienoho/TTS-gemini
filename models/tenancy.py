@@ -12,7 +12,8 @@ from sqlalchemy.orm import Session, Query
 from sqlalchemy.sql import operators
 
 from .organization import Organization, OrganizationStatus
-from utils.tenant_manager import tenant_manager
+# Lazy import to avoid circular dependency
+# from utils.tenant_manager import tenant_manager
 
 Base = declarative_base()
 
@@ -241,7 +242,7 @@ class TenantAwareAudioFile(TenantAwareBase):
     mime_type = Column(String(50), nullable=False)
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     tags = Column(String(500), nullable=True)
 
     # User association
@@ -264,7 +265,7 @@ class TenantAwareAudioFile(TenantAwareBase):
             'file_size': self.file_size,
             'duration_seconds': self.duration_seconds,
             'mime_type': self.mime_type,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'tags': self.tags,
             'storage_provider': self.storage_provider,
             'storage_path': self.storage_path,
@@ -300,7 +301,7 @@ class TenantAwareRequestLog(TenantAwareBase):
     error_stack_trace = Column(String(2000), nullable=True)
 
     # Additional metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -319,7 +320,7 @@ class TenantAwareRequestLog(TenantAwareBase):
             'response_size': self.response_size,
             'error_message': self.error_message,
             'created_at': self.created_at.isoformat() if self.created_at is not None else None,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
         }
 
 

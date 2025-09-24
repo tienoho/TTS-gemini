@@ -216,9 +216,9 @@ class TenantManager:
 
         return False
 
-    def track_usage(self, organization_id: int, usage_type: str, count: int = 1,
-                   amount: float = 0.0, unit: str = 'count', cost: float = 0.0,
-                   db_session: Session, metadata: Optional[Dict[str, Any]] = None) -> bool:
+    def track_usage(self, organization_id: int, usage_type: str, db_session: Session, 
+                   count: int = 1, amount: float = 0.0, unit: str = 'count', cost: float = 0.0,
+                   metadata: Optional[Dict[str, Any]] = None) -> bool:
         """Track usage for organization."""
         try:
             usage_record = OrganizationUsage(

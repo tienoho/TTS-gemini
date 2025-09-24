@@ -29,41 +29,42 @@ def register() -> Tuple[Dict, int]:
         # Validate request data
         schema = UserRegistrationSchema()
         data = schema.load(request.get_json() or {})
-# Create new user with database constraints handling race condition
-user = User(
-    username=data['username'],
-    email=data['email'],
-    password=data['password']
-)
+        
+        # Create new user with database constraints handling race condition
+        user = User(
+            username=data['username'],
+            email=data['email'],
+            password=data['password']
+        )
 
-# Generate API key
-api_key = user.generate_api_key()
+        # Generate API key
+        api_key = user.generate_api_key()
 
-# Save user - let database handle uniqueness constraints
-try:
-    db.session.add(user)
-    db.session.commit()
-except IntegrityError:
-    db.session.rollback()
-    return jsonify({
-        'error': 'Username or email already exists',
-        'message': 'Please choose a different username or email address'
-    }), 409
+        # Save user - let database handle uniqueness constraints
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return jsonify({
+                'error': 'Username or email already exists',
+                'message': 'Please choose a different username or email address'
+            }), 409
 
-    # Create tokens
-    access_token = create_access_token(identity=user.id)
-    refresh_token = create_refresh_token(identity=user.id)
+        # Create tokens
+        access_token = create_access_token(identity=user.id)
+        refresh_token = create_refresh_token(identity=user.id)
 
-    return jsonify({
-        'message': 'User registered successfully',
-        'user': user.to_dict(),
-        'api_key': api_key,
-        'tokens': {
-            'access_token': access_token,
-            'refresh_token': refresh_token,
-            'token_type': 'Bearer'
-        }
-    }), 201
+        return jsonify({
+            'message': 'User registered successfully',
+            'user': user.to_dict(),
+            'api_key': api_key,
+            'tokens': {
+                'access_token': access_token,
+                'refresh_token': refresh_token,
+                'token_type': 'Bearer'
+            }
+        }), 201
 
     except Exception as e:
         db.session.rollback()

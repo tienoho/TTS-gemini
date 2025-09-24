@@ -1,5 +1,5 @@
 """
-Redis Manager for queue management, caching, and rate limiting
+Redis manager for queue operations, caching, and rate limiting
 """
 
 import json
@@ -8,18 +8,18 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 from contextlib import asynccontextmanager
 
-import aioredis
-from aioredis import Redis
-from aioredis.exceptions import RedisError, ConnectionError
+import redis
+from redis import Redis
+from redis.exceptions import RedisError, ConnectionError
 
-from ..config import get_settings
+from config.simple_settings import get_simple_settings
 
 
 class RedisManager:
     """Redis manager for queue operations, caching, and rate limiting."""
 
     def __init__(self):
-        self.settings = get_settings()
+        self.settings = get_simple_settings()
         self.redis: Optional[Redis] = None
         self.is_connected = False
 

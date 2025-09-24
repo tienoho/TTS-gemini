@@ -3,16 +3,17 @@ Flask==2.3.3
 Werkzeug==2.3.7
 
 # Database
-SQLAlchemy==2.0.21
-Flask-SQLAlchemy==3.0.5
-Flask-Migrate==4.0.5
-psycopg2-binary==2.9.7
-alembic==1.12.0
+SQLAlchemy==2.0.36
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.7
+pg8000==1.31.5
+alembic==1.13.3
 
 # Authentication & Security
 Flask-JWT-Extended==4.5.3
 Flask-Limiter==3.5.0
 Flask-CORS==4.0.0
+Flask-SocketIO==5.3.6
 bcrypt==4.0.1
 python-dotenv==1.0.0
 cryptography==41.0.4
@@ -36,6 +37,10 @@ flower==2.0.1
 google-genai==0.6.0
 google-generativeai==0.8.3
 pydub==0.25.1
+librosa==0.10.1
+soundfile==0.12.1
+scikit-learn==1.3.2
+plotly==5.17.0
 pybreaker==1.0.1
 tenacity==8.2.3
 
@@ -43,14 +48,13 @@ tenacity==8.2.3
 boto3==1.28.57
 google-cloud-storage==2.10.0
 
-# Monitoring & Logging
-Flask-MonitoringDashboard==3.1.4
-structlog==23.1.0
-prometheus-client==0.17.1
-prometheus-flask-exporter==0.22.4
+# Monitoring & Logging - TEMPORARILY DISABLED
+# Flask-MonitoringDashboard==3.3.2  # Causes timeout during pip install
+# structlog==23.1.0
+# prometheus-client==0.17.1
+# prometheus-flask-exporter==0.22.4
 
 # Circuit Breaker & Resilience
-pybreaker==1.0.1
 
 # Development & Testing
 pytest==7.4.2
@@ -59,31 +63,29 @@ pytest-cov==4.1.0
 pytest-mock==3.11.1
 pytest-asyncio==0.21.1
 pytest-xdist==3.3.1
-locust==2.16.1
+# locust==2.16.1  # Temporarily disabled - heavy dependency
 
-# Code quality
-black==23.9.1
-isort==5.12.0
-flake8==6.1.0
-mypy==1.5.1
-pre-commit==3.4.0
+# Code quality - TEMPORARILY DISABLED FOR FASTER BUILD
+# black==23.9.1
+# isort==5.12.0
+# flake8==6.1.0
+# mypy==1.5.1
+# pre-commit==3.4.0
 
-# Documentation
-Flask-Swagger-UI==4.11.1
-mkdocs==1.5.3
-mkdocs-material==9.2.8
+# Documentation - TEMPORARILY DISABLED
+# Flask-Swagger-UI==4.11.1
+# mkdocs==1.5.3
+# mkdocs-material==9.2.8
 
 # Utilities
 python-multipart==0.0.6
 marshmallow==3.20.1
 python-dateutil==2.8.2
-requests==2.31.0
+requests==2.32.0
 httpx==0.24.1
-tenacity==8.2.3
 
 # Async support
-asyncio==3.4.3
-aiofiles==23.2.1
+aiofiles==24.1.0
 aiohttp==3.8.5
 
 # File handling
@@ -93,8 +95,16 @@ Pillow==10.0.1
 memory-profiler==0.61.0
 line-profiler==4.1.2
 
+# Data Science
+pandas==2.1.1
+numpy==1.25.2
+scipy==1.11.2
+
+# System monitoring
+psutil==5.9.5
+
 # Environment types
 types-redis==4.6.0.5
 types-requests==2.31.0.2
 types-python-dateutil==2.8.19.14
-types-boto3==1.28.57
+types-boto3==1.35.71

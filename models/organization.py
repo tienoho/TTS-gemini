@@ -447,7 +447,7 @@ class OrganizationUsage(Base):
     cost_per_unit = Column(Float, default=0.0)
 
     # Metadata
-    metadata = Column(JSON, default=dict)  # Additional usage details
+    request_metadata = Column(JSON, default=dict)  # Additional usage details
 
     # Audit fields
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
@@ -478,7 +478,7 @@ class OrganizationUsage(Base):
             'unit': self.unit,
             'cost': self.cost,
             'cost_per_unit': self.cost_per_unit,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
         }
 
     @staticmethod

@@ -215,7 +215,7 @@ class BillingManager:
 
         return billings
 
-    def get_billing_history(self, organization_id: int, limit: int = 12, db_session: Session) -> List[Dict[str, Any]]:
+    def get_billing_history(self, organization_id: int, db_session: Session, limit: int = 12) -> List[Dict[str, Any]]:
         """Get billing history for organization."""
         billings = db_session.query(OrganizationBilling).filter(
             OrganizationBilling.organization_id == organization_id
@@ -244,8 +244,8 @@ class BillingManager:
 
         return history
 
-    def update_billing_status(self, billing_id: int, status: str, transaction_id: str = None,
-                            invoice_url: str = None, db_session: Session) -> bool:
+    def update_billing_status(self, billing_id: int, status: str, db_session: Session, transaction_id: str = None,
+                             invoice_url: str = None) -> bool:
         """Update billing status."""
         billing = db_session.query(OrganizationBilling).filter(
             OrganizationBilling.id == billing_id
@@ -274,7 +274,7 @@ class BillingManager:
         current_usage = self.calculate_monthly_usage(organization_id, current_year, current_month, db_session)
 
         # Get billing history
-        billing_history = self.get_billing_history(organization_id, 6, db_session)
+        billing_history = self.get_billing_history(organization_id, db_session, 6)
 
         # Calculate average monthly cost
         total_billing_cost = sum(billing['amount'] for billing in billing_history if billing['status'] == 'paid')
@@ -396,7 +396,7 @@ class BillingManager:
                 return False
 
             success = self.update_billing_status(
-                billing_id, status, transaction_id, invoice_url, db_session
+                billing_id, status, db_session, transaction_id, invoice_url
             )
 
             if success and status == 'paid':

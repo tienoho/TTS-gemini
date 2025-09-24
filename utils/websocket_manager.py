@@ -15,9 +15,9 @@ from flask import current_app
 from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect
 from flask_jwt_extended import decode_token
 
-from ..config.websocket import get_websocket_settings
-from .auth import auth_service
-from .redis_manager import redis_manager
+from config.simple_settings import get_simple_settings
+from utils.auth import auth_service
+from utils.redis_manager import redis_manager
 
 
 class WebSocketConnection:
@@ -67,7 +67,7 @@ class WebSocketManager:
     """Manages WebSocket connections, rooms, and message broadcasting."""
 
     def __init__(self):
-        self.settings = get_websocket_settings()
+        self.settings = get_simple_settings()
         self.connections: Dict[str, WebSocketConnection] = {}
         self.rooms: Dict[str, Set[str]] = defaultdict(set)  # room_id -> set of sids
         self.user_connections: Dict[int, Set[str]] = defaultdict(set)  # user_id -> set of sids
@@ -79,14 +79,23 @@ class WebSocketManager:
         # Message handlers
         self._message_handlers: Dict[str, Callable] = {}
 
-        # Start background tasks
-        self._start_background_tasks()
+        # Background tasks will be started when needed
+        self._cleanup_task = None
+        self._metrics_task = None
+        self._tasks_started = False
 
     def _start_background_tasks(self):
         """Start background cleanup and metrics tasks."""
-        if self.settings.WS_ENABLE_HEARTBEAT:
-            self._cleanup_task = asyncio.create_task(self._cleanup_inactive_connections())
-            self._metrics_task = asyncio.create_task(self._collect_metrics())
+        if not self._tasks_started and self.settings.WS_ENABLE_HEARTBEAT:
+            try:
+                # Only start if event loop is running
+                loop = asyncio.get_running_loop()
+                self._cleanup_task = loop.create_task(self._cleanup_inactive_connections())
+                self._metrics_task = loop.create_task(self._collect_metrics())
+                self._tasks_started = True
+            except RuntimeError:
+                # No event loop running, tasks will be started later
+                pass
 
     async def _cleanup_inactive_connections(self):
         """Background task to cleanup inactive connections."""

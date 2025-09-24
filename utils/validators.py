@@ -6,7 +6,7 @@ import re
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, validator
-from pydantic.types import EmailStr
+from pydantic import EmailStr
 
 
 class UserRegistrationSchema(BaseModel):
@@ -350,7 +350,7 @@ def sanitize_html(text: str) -> str:
     # Remove potentially dangerous attributes
     dangerous_attrs = ['onclick', 'onload', 'onerror', 'onmouseover', 'onmouseout']
     for attr in dangerous_attrs:
-        text = re.sub(f'{attr}\s*=\s*["\'][^"\']*["\']', '', text, flags=re.IGNORECASE)
+        text = re.sub(f'{attr}\\s*=\\s*["\'][^"\']*["\']', '', text, flags=re.IGNORECASE)
 
     # Escape HTML entities
     text = text.replace('&', '&')

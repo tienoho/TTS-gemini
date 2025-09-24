@@ -2,66 +2,58 @@
 Testing configuration for Flask TTS API
 """
 
-import os
 from datetime import timedelta
 
-from pydantic_settings import BaseSettings
 
-
-class TestingConfig(BaseSettings):
+class TestingConfig:
     """Testing configuration settings."""
 
     # Flask settings
-    DEBUG: bool = True
-    TESTING: bool = True
-    SECRET_KEY: str = 'test-secret-key'
+    DEBUG = True
+    TESTING = True
+    SECRET_KEY = 'test-secret-key'
 
     # Database
-    SQLALCHEMY_DATABASE_URI: str = 'sqlite:///test_tts_api.db'
-    SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
-    SQLALCHEMY_ENGINE_OPTIONS: dict = {
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///test_tts_api.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True,
     }
 
     # JWT settings
-    JWT_SECRET_KEY: str = 'test-jwt-secret'
-    JWT_ACCESS_TOKEN_EXPIRES: timedelta = timedelta(minutes=5)
-    JWT_REFRESH_TOKEN_EXPIRES: timedelta = timedelta(hours=1)
+    JWT_SECRET_KEY = 'test-jwt-secret'
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=5)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(hours=1)
 
     # Redis (use in-memory for testing)
-    REDIS_URL: str = 'redis://localhost:6379/1'
+    REDIS_URL = 'redis://localhost:6379/1'
 
     # Gemini API (use mock for testing)
-    GEMINI_API_KEY: str = 'test-gemini-api-key'
+    GEMINI_API_KEY = 'test-gemini-api-key'
 
     # Audio settings
-    MAX_AUDIO_FILE_SIZE: int = 1048576  # 1MB for testing
-    SUPPORTED_AUDIO_FORMATS: list = ['mp3', 'wav']
-    DEFAULT_VOICE_NAME: str = 'Alnilam'
-    MAX_TEXT_LENGTH: int = 1000  # Shorter for testing
+    MAX_AUDIO_FILE_SIZE = 1048576  # 1MB for testing
+    SUPPORTED_AUDIO_FORMATS = ['mp3', 'wav']
+    DEFAULT_VOICE_NAME = 'Alnilam'
+    MAX_TEXT_LENGTH = 1000  # Shorter for testing
 
     # Rate limiting (more permissive for testing)
-    RATE_LIMIT_PER_MINUTE: int = 1000
-    RATE_LIMIT_PREMIUM_PER_MINUTE: int = 5000
+    RATE_LIMIT_PER_MINUTE = 1000
+    RATE_LIMIT_PREMIUM_PER_MINUTE = 5000
 
     # File storage
-    UPLOAD_FOLDER: str = 'test_uploads/audio'
-    MAX_CONTENT_LENGTH: int = 2097152  # 2MB for testing
+    UPLOAD_FOLDER = 'test_uploads/audio'
+    MAX_CONTENT_LENGTH = 2097152  # 2MB for testing
 
     # CORS (allow all for testing)
-    CORS_ORIGINS: list = ['*']
+    CORS_ORIGINS = ['*']
 
     # Logging
-    LOG_LEVEL: str = 'DEBUG'
-    LOG_FILE: str = 'logs/test_tts_api.log'
+    LOG_LEVEL = 'DEBUG'
+    LOG_FILE = 'logs/test_tts_api.log'
 
     # Monitoring (disabled for testing)
-    ENABLE_MONITORING: bool = False
+    ENABLE_MONITORING = False
 
     # Disable CSRF for testing
-    WTF_CSRF_ENABLED: bool = False
-
-    class Config:
-        """Pydantic configuration."""
-        env_file = '.env.test'
-        case_sensitive = False
+    WTF_CSRF_ENABLED = False

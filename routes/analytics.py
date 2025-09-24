@@ -5,7 +5,8 @@ Provides comprehensive analytics and reporting endpoints
 
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List, Tuple
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, Response
+from sqlalchemy.orm import Session
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app.extensions import db

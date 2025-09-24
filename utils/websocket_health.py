@@ -12,9 +12,9 @@ from threading import Lock
 
 from flask import current_app
 
-from .websocket_manager import get_websocket_manager
-from .redis_manager import redis_manager
-from ..config.websocket import get_websocket_settings
+from utils.websocket_manager import get_websocket_manager
+from utils.redis_manager import redis_manager
+from config.simple_settings import get_simple_settings
 
 
 class HealthStatus(str, Enum):
@@ -142,21 +142,23 @@ class WebSocketHealthMonitor:
     """Monitors WebSocket connection health."""
 
     def __init__(self):
-        self.settings = get_websocket_settings()
+        self.settings = get_simple_settings()
         self.connection_health: Dict[str, ConnectionHealth] = {}
         self._lock = Lock()
         self._monitoring_task = None
         self._cleanup_task = None
         self._alert_callbacks: List[Callable] = []
 
-        # Start monitoring tasks
-        self._start_monitoring_tasks()
+        # Don't start monitoring tasks in constructor
+        # They will be started when needed
+        self._monitoring_task = None
+        self._cleanup_task = None
 
     def _start_monitoring_tasks(self):
         """Start background monitoring tasks."""
-        if self.settings.WS_ENABLE_HEARTBEAT:
-            self._monitoring_task = asyncio.create_task(self._monitor_connections())
-            self._cleanup_task = asyncio.create_task(self._cleanup_stale_connections())
+        # Don't start asyncio tasks in constructor
+        # They should be started when the event loop is running
+        pass
 
     async def _monitor_connections(self):
         """Background task to monitor connection health."""
@@ -429,5 +431,3 @@ def get_unhealthy_connections() -> List[Dict]:
     """Get list of unhealthy connections."""
     unhealthy = websocket_health_monitor.get_unhealthy_connections()
     return [health.to_dict() for health in unhealthy]
-</content>
-</line_count>

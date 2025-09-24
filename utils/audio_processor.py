@@ -13,7 +13,7 @@ from typing import Dict, Optional, Tuple
 
 import aiofiles
 
-from .gemini_tts import gemini_tts_service
+    # from .gemini_tts import gemini_tts_service  # Temporarily disabled
 from .exceptions import AudioProcessingException, ValidationException
 
 
@@ -22,7 +22,7 @@ class AudioProcessor:
 
     def __init__(self):
         """Initialize the audio processor."""
-        self.tts_service = gemini_tts_service
+        # self.tts_service = gemini_tts_service  # Temporarily disabled
 
     def parse_audio_mime_type(self, mime_type: str) -> Dict[str, Optional[int]]:
         """Parses bits per sample and rate from an audio MIME type string.

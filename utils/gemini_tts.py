@@ -22,7 +22,7 @@ from pydub import AudioSegment
 from pybreaker import CircuitBreaker
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
-from config.gemini import gemini_config
+# from config.gemini import gemini_config
 from utils.exceptions import (
     GeminiAPIException,
     GeminiQuotaExceededException,
@@ -45,7 +45,8 @@ class GeminiTTSService:
     def __init__(self):
         """Initialize the Gemini TTS service."""
         self.logger = logging.getLogger(__name__)
-        self.config = gemini_config
+        # Use environment variables directly instead of pydantic config
+        self.api_key = os.getenv('GEMINI_API_KEY', '')
 
         # Initialize circuit breaker
         self.circuit_breaker = CircuitBreaker(

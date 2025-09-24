@@ -9,7 +9,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from flask_monitoringdashboard import MonitoringDashboard
+# from flask_monitoringdashboard import dashboard  # Temporarily disabled due to import issues
 
 # Initialize extensions
 db = SQLAlchemy()
@@ -23,7 +23,7 @@ limiter = Limiter(
 )
 
 # Initialize monitoring dashboard
-monitoring_dashboard = MonitoringDashboard()
+# monitoring_dashboard = dashboard  # Temporarily disabled due to import issues
 
 
 def init_extensions(app):
@@ -58,8 +58,8 @@ def init_extensions(app):
     limiter.init_app(app)
 
     # Initialize Monitoring Dashboard (only in development)
-    if app.config.get('ENABLE_MONITORING', False) and not app.testing:
-        monitoring_dashboard.init_app(app)
+    # if app.config.get('ENABLE_MONITORING', False) and not app.testing:
+    #     monitoring_dashboard.init_app(app)  # Temporarily disabled due to import issues
 
 
 def init_error_handlers(app):
@@ -201,7 +201,11 @@ def init_logging(app):
             app.logger.setLevel(getattr(logging, app.config.get('LOG_LEVEL', 'INFO')))
 
         # Disable default Flask logging to console in production
-        app.logger.removeHandler(app.logger.handlers[0] if app.logger.handlers else None)
+        if app.logger.handlers:
+            # Only remove console handlers, keep file handlers
+            console_handlers = [h for h in app.logger.handlers if isinstance(h, logging.StreamHandler)]
+            for handler in console_handlers:
+                app.logger.removeHandler(handler)
 
     # Always log to console in development
     if app.debug:

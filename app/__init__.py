@@ -53,9 +53,10 @@ def create_app(config_name: Optional[str] = None) -> Flask:
     init_error_handlers(app)
 
     # Register blueprints
-    from routes import auth_bp, tts_bp
+    from routes import auth_bp, tts_bp, bi_bp
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     app.register_blueprint(tts_bp, url_prefix='/api/v1/tts')
+    app.register_blueprint(bi_bp, url_prefix='/api/v1/bi')
 
     # Health check endpoint
     @app.route('/api/v1/health', methods=['GET'])
@@ -80,6 +81,7 @@ def create_app(config_name: Optional[str] = None) -> Flask:
             'endpoints': {
                 'auth': '/api/v1/auth',
                 'tts': '/api/v1/tts',
+                'bi': '/api/v1/bi',
                 'health': '/api/v1/health'
             }
         })

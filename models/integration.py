@@ -164,7 +164,7 @@ class IntegrationDB(Base):
     retry_delay = Column(Integer, default=1)
     is_active = Column(Boolean, default=True)
     tags = Column(JSON, default=list)
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     status_info = Column(JSON, default=dict)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

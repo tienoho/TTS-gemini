@@ -102,7 +102,7 @@ class VoiceModel(Base):
     access_token = Column(String(255), unique=True, index=True, nullable=True)
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     tags = Column(JSON, default=list)
 
     # Audit fields
@@ -296,7 +296,7 @@ class VoiceSample(Base):
     mfcc_features = Column(JSON, default=dict)
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     processing_notes = Column(Text, nullable=True)
 
     # Audit fields

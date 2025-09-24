@@ -28,14 +28,14 @@ from utils.progress_streamer import (
     mark_request_failed,
     ProgressStatus
 )
-from config import get_settings
+from config.simple_settings import get_simple_settings
 
 tts_bp = Blueprint('tts', __name__, url_prefix='/api/v1/tts')
 
 # Initialize audio processor (will be set by application factory)
 audio_processor = None
 
-settings = get_settings()
+settings = get_simple_settings()
 auth_service = get_auth_service()
 
 
@@ -44,9 +44,19 @@ def init_audio_processor(api_key: str):
 
     Args:
         api_key: Google Gemini API key
+
+    Returns:
+        bool: True if initialization successful, False otherwise
     """
     global audio_processor
-    audio_processor = AudioProcessor(api_key)
+    try:
+        audio_processor = AudioProcessor(api_key)
+        logging_service.info("Audio processor initialized successfully")
+        return True
+    except Exception as e:
+        logging_service.error(f"Failed to initialize audio processor: {e}")
+        audio_processor = None
+        return False
 
 
 @tts_bp.route('/generate', methods=['POST'])
@@ -62,17 +72,96 @@ def generate_audio() -> Tuple[Dict, int]:
         data = request.get_json() or {}
 
         # Validate request data
-        schema = TTSRequestSchema()
-        validated_data = schema.load(data)
+        try:
+            # Basic validation
+            if not data or not isinstance(data, dict):
+                return jsonify({
+                    'error': 'Invalid request data',
+                    'message': 'Request body must be a valid JSON object'
+                }), 400
 
-        # Sanitize text input
-        text = SecurityUtils.sanitize_input(validated_data['text'])
+            # Check required fields
+            if 'text' not in data or not data['text']:
+                return jsonify({
+                    'error': 'Missing required field',
+                    'message': 'Text field is required'
+                }), 400
 
-        # Check text length
-        if len(text) > 5000:
+            # Sanitize and validate text input
+            text = SecurityUtils.sanitize_input(data['text'])
+            if not text:
+                return jsonify({
+                    'error': 'Invalid text',
+                    'message': 'Text cannot be empty after sanitization'
+                }), 400
+
+            # Check text length
+            if len(text) > 5000:
+                return jsonify({
+                    'error': 'Text too long',
+                    'message': 'Text must be less than 5000 characters'
+                }), 400
+
+            # Check for SQL injection
+            if not SecurityUtils.is_sql_injection_safe(text):
+                return jsonify({
+                    'error': 'Security violation',
+                    'message': 'Text contains potentially dangerous content'
+                }), 400
+
+            # Validate optional fields
+            voice_name = data.get('voice_name', 'Alnilam')
+            output_format = data.get('output_format', 'wav')
+            speed = data.get('speed', 1.0)
+            pitch = data.get('pitch', 0.0)
+
+            # Validate voice_name
+            if not isinstance(voice_name, str) or len(voice_name) > 100:
+                return jsonify({
+                    'error': 'Invalid voice name',
+                    'message': 'Voice name must be a string with maximum 100 characters'
+                }), 400
+
+            # Validate output_format
+            allowed_formats = ['mp3', 'wav', 'flac', 'ogg']
+            if output_format not in allowed_formats:
+                return jsonify({
+                    'error': 'Invalid output format',
+                    'message': f'Output format must be one of: {", ".join(allowed_formats)}'
+                }), 400
+
+            # Validate speed and pitch
+            try:
+                speed = float(speed)
+                pitch = float(pitch)
+                if not (0.1 <= speed <= 3.0):
+                    return jsonify({
+                        'error': 'Invalid speed',
+                        'message': 'Speed must be between 0.1 and 3.0'
+                    }), 400
+                if not (-20.0 <= pitch <= 20.0):
+                    return jsonify({
+                        'error': 'Invalid pitch',
+                        'message': 'Pitch must be between -20.0 and 20.0'
+                    }), 400
+            except (ValueError, TypeError):
+                return jsonify({
+                    'error': 'Invalid numeric values',
+                    'message': 'Speed and pitch must be valid numbers'
+                }), 400
+
+            validated_data = {
+                'text': text,
+                'voice_name': voice_name,
+                'output_format': output_format,
+                'speed': speed,
+                'pitch': pitch
+            }
+
+        except Exception as e:
             return jsonify({
-                'error': 'Text too long',
-                'message': 'Text must be less than 5000 characters'
+                'error': 'Validation failed',
+                'message': sanitize_error_message(str(e))
             }), 400
 
         # Create audio request
@@ -127,9 +216,14 @@ def get_audio_requests() -> Tuple[Dict, int]:
         current_user_id = get_jwt_identity()
         query_params = request.args
 
-        # Validate pagination parameters
-        schema = TTSPaginationSchema()
-        pagination_data = schema.load(query_params)
+        # Validate pagination parameters - simplified for now
+        pagination_data = {
+            'page': int(query_params.get('page', 1)),
+            'per_page': int(query_params.get('per_page', 10)),
+            'status': query_params.get('status'),
+            'sort_by': query_params.get('sort_by', 'created_at'),
+            'sort_order': query_params.get('sort_order', 'desc')
+        }
 
         # Build query
         query = db.session.query(AudioRequest).filter(
@@ -254,39 +348,60 @@ def download_audio(request_id: int) -> Tuple[Dict, int]:
                 'error': 'No audio files',
                 'message': 'No audio files found for this request'
             }), 404
-# Return first audio file with path traversal protection
-audio_file = audio_files[0]
+        
+        # Return first audio file with path traversal protection
+        audio_file = audio_files[0]
 
-# Validate file path to prevent directory traversal
-if not audio_file.file_path or '..' in audio_file.file_path:
-    return jsonify({
-        'error': 'Invalid file path',
-        'message': 'File path contains invalid characters'
-    }), 400
+        # Validate file path to prevent directory traversal
+        if not audio_file.file_path or '..' in audio_file.file_path:
+            return jsonify({
+                'error': 'Invalid file path',
+                'message': 'File path contains invalid characters'
+            }), 400
 
-# Ensure file exists and is within allowed directory
-if not os.path.exists(audio_file.file_path):
-    return jsonify({
-        'error': 'File not found',
-        'message': 'Audio file not found on disk'
-    }), 404
+        # Ensure file exists and is within allowed directory
+        if not os.path.exists(audio_file.file_path):
+            return jsonify({
+                'error': 'File not found',
+                'message': 'Audio file not found on disk'
+            }), 404
 
-# Additional security check - ensure file is within expected directory
-upload_dir = os.path.abspath(current_app.config.get('UPLOAD_FOLDER', 'uploads/audio'))
-file_path = os.path.abspath(audio_file.file_path)
+        # Additional security check - ensure file is within expected directory
+        upload_dir = os.path.abspath(current_app.config.get('UPLOAD_FOLDER', 'uploads/audio'))
+        file_path = os.path.abspath(audio_file.file_path)
 
-if not file_path.startswith(upload_dir):
-    return jsonify({
-        'error': 'Access denied',
-        'message': 'File access not allowed'
-    }), 403
+        # Enhanced path traversal protection
+        try:
+            # Use os.path.relpath to check if file is within allowed directory
+            relative_path = os.path.relpath(file_path, upload_dir)
 
-return send_file(
-    audio_file.file_path,
-    as_attachment=True,
-    download_name=audio_file.filename,
-    mimetype=audio_file.mime_type
-)
+            # Check for path traversal attempts
+            if relative_path.startswith('..') or '..' in relative_path:
+                return jsonify({
+                    'error': 'Access denied',
+                    'message': 'Path traversal attempt detected'
+                }), 403
+
+            # Additional check: ensure the resolved path is still within upload_dir
+            if not file_path.startswith(upload_dir):
+                return jsonify({
+                    'error': 'Access denied',
+                    'message': 'File access not allowed'
+                }), 403
+
+        except ValueError:
+            # os.path.relpath raises ValueError if paths are on different drives (Windows)
+            return jsonify({
+                'error': 'Access denied',
+                'message': 'Invalid file path'
+            }), 403
+
+        return send_file(
+            audio_file.file_path,
+            as_attachment=True,
+            download_name=audio_file.filename,
+            mimetype=audio_file.mime_type
+        )
 
     except Exception as e:
         return jsonify({
@@ -426,8 +541,9 @@ def process_audio_task(request_id: int, user_id: int = None) -> None:
                 {"stage": "audio_generation"}
             )
 
-            # Calculate file hash
-            file_hash = SecurityUtils().calculate_audio_hash(audio_data)
+            # Calculate file hash - simplified for now
+            import hashlib
+            file_hash = hashlib.md5(audio_data).hexdigest()
 
             # Create temporary file
             with tempfile.NamedTemporaryFile(
@@ -479,7 +595,6 @@ def process_audio_task(request_id: int, user_id: int = None) -> None:
             )
 
             db.session.commit()
-
         else:
             # Mark as failed if no audio processor
             mark_request_failed(

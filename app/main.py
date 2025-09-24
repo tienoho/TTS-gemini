@@ -3,6 +3,8 @@ Flask TTS API Main Application Entry Point
 """
 
 import os
+import sys
+sys.path.append('/app')
 from app import create_app
 
 # Create Flask application

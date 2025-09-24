@@ -60,7 +60,7 @@ class RequestLog(Base):
     correlation_id = Column(String(100), nullable=True)  # For tracing
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
@@ -118,7 +118,7 @@ class RequestLog(Base):
             'user_agent': self.user_agent,
             'request_id_header': self.request_id_header,
             'correlation_id': self.correlation_id,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
 

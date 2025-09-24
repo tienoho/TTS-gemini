@@ -50,7 +50,7 @@ class SystemMetric(Base):
 
     # Metadata
     labels = Column(JSON, default=dict)  # Additional dimensions
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
 
     # Timestamps
     timestamp = Column(DateTime, default=datetime.utcnow, index=True)
@@ -106,7 +106,7 @@ class SystemMetric(Base):
             'value': self.value,
             'unit': self.unit,
             'labels': self.labels,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'timestamp': self.timestamp.isoformat() if self.timestamp else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }

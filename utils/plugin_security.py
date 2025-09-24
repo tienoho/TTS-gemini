@@ -20,8 +20,8 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union, Callable
 from enum import Enum
 from dataclasses import dataclass, field
 
-from ..config.plugin import plugin_config
-from ..models.plugin import Plugin, PluginPermission, PluginStatus
+from config.plugin import plugin_config
+from models.plugin import Plugin, PluginPermission, PluginStatus
 
 
 class SecurityLevel(str, Enum):
@@ -285,7 +285,7 @@ class ResourceMonitor:
             memory_used = final_memory - initial_memory
 
             if memory_used > plugin_config.MAX_MEMORY_USAGE * 1024 * 1024:
-                self.logger.warning(f"High memory usage detected: {memory_used / 1024 / 1024".2f"} MB")
+                self.logger.warning(f"High memory usage detected: {memory_used / 1024 / 1024:.2f} MB")
 
     def get_memory_usage(self) -> int:
         """Get current memory usage in bytes."""

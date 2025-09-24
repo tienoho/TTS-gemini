@@ -85,7 +85,7 @@ class RevenueStream(Base):
     transaction_id = Column(String(100), index=True)
     payment_method = Column(String(50))
     payment_status = Column(String(20), default='completed', index=True)
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -123,7 +123,7 @@ class RevenueStream(Base):
             'transaction_id': self.transaction_id,
             'payment_method': self.payment_method,
             'payment_status': self.payment_status,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at is not None else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at is not None else None,
         }
@@ -167,7 +167,7 @@ class CustomerJourney(Base):
     engagement_score = Column(Float, default=0.0)
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 
     # Indexes
@@ -200,7 +200,7 @@ class CustomerJourney(Base):
             'segment': self.segment,
             'lifecycle_stage': self.lifecycle_stage,
             'engagement_score': self.engagement_score,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at is not None else None,
         }
 
@@ -244,7 +244,7 @@ class BusinessKPI(Base):
     owner_id = Column(Integer, ForeignKey('users.id'))  # KPI owner
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -279,7 +279,7 @@ class BusinessKPI(Base):
             'organization_id': self.organization_id,
             'department': self.department,
             'owner_id': self.owner_id,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at is not None else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at is not None else None,
         }
@@ -329,7 +329,7 @@ class UsagePattern(Base):
     affected_features = Column(JSON, default=list)  # Features affected
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -367,7 +367,7 @@ class UsagePattern(Base):
             'organization_id': self.organization_id,
             'affected_endpoints': self.affected_endpoints,
             'affected_features': self.affected_features,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at is not None else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at is not None else None,
         }
@@ -409,7 +409,7 @@ class FinancialProjection(Base):
     department = Column(String(50))
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -440,7 +440,7 @@ class FinancialProjection(Base):
             'scenario_assumptions': self.scenario_assumptions,
             'organization_id': self.organization_id,
             'department': self.department,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
         }
@@ -491,7 +491,7 @@ class BusinessInsight(Base):
     implemented_at = Column(DateTime, nullable=True)
 
     # Metadata
-    metadata = Column(JSON, default=dict)
+    request_metadata = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -530,7 +530,7 @@ class BusinessInsight(Base):
             'reviewed_by': self.reviewed_by,
             'reviewed_at': self.reviewed_at.isoformat() if self.reviewed_at is not None else None,
             'implemented_at': self.implemented_at.isoformat() if self.implemented_at is not None else None,
-            'metadata': self.metadata,
+            'metadata': self.request_metadata,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
         }
