@@ -72,10 +72,9 @@ pytest-xdist==3.3.1
 # mypy==1.5.1
 # pre-commit==3.4.0
 
-# Documentation - TEMPORARILY DISABLED
-# Flask-Swagger-UI==4.11.1
-# mkdocs==1.5.3
-# mkdocs-material==9.2.8
+# Documentation
+Flask-Swagger-UI==4.11.1
+flask-swagger==0.2.14
 
 # Utilities
 python-multipart==0.0.6

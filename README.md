@@ -198,6 +198,332 @@ curl http://localhost:5000/api/v1/health
 | `GET` | `/api/v1/integrations` | Third-party integrations |
 | `GET` | `/api/v1/webhooks` | Webhook management |
 
+## 📖 Swagger API Documentation
+
+### 🎯 Overview of Swagger Documentation
+
+**Swagger** (now known as OpenAPI) is an open-source software framework backed by a large ecosystem of tools that helps developers design, build, document, and consume REST APIs. The TTS-Gemini system includes comprehensive Swagger documentation that provides:
+
+- **Interactive API Testing** - Test all endpoints directly from the browser
+- **OpenAPI 3.0.3 Specification** - Industry-standard API specification format
+- **Auto-generated Documentation** - Always up-to-date API documentation
+- **Request/Response Examples** - Real examples for all endpoints
+- **Schema Validation** - Built-in request/response validation
+- **Authentication Support** - JWT and API key authentication flows
+
+#### Benefits of Using Swagger Documentation
+
+- **Developer Experience** - Easy-to-use interface for API exploration
+- **Consistency** - Standardized documentation across all endpoints
+- **Testing** - Interactive testing without additional tools
+- **Integration** - Easy integration with API clients and tools
+- **Maintenance** - Auto-updated documentation reduces manual work
+
+### ⚙️ Setup Instructions
+
+#### Prerequisites
+
+Before setting up Swagger documentation, ensure you have the following:
+
+- **Python 3.8+** - Core runtime environment
+- **Flask 2.3+** - Web framework (included in requirements.txt)
+- **Flask-RESTX** - API documentation framework
+- **Internet Connection** - Required for Swagger UI assets
+
+#### Environment Configuration
+
+```bash
+# Ensure these environment variables are set
+export FLASK_ENV=development
+export FLASK_APP=app.main:create_app
+
+# Optional: Enable debug mode for detailed error messages
+export FLASK_DEBUG=1
+```
+
+#### Installation Steps
+
+1. **Install Dependencies**
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+2. **Verify Installation**
+  ```bash
+  # Check if Flask-RESTX is installed
+  python -c "import flask_restx; print('Flask-RESTX version:', flask_restx.__version__)"
+  ```
+
+3. **Start the Application**
+  ```bash
+  # Method 1: Using Flask CLI
+  flask run --host=0.0.0.0 --port=5000
+
+  # Method 2: Using Python module
+  python -m app.main
+
+  # Method 3: Using development server
+  python app/main.py
+  ```
+
+### 🚀 Running the Application
+
+#### Development Mode
+
+```bash
+# Start in development mode with auto-reload
+export FLASK_ENV=development
+export FLASK_DEBUG=1
+flask run --host=0.0.0.0 --port=5000
+```
+
+#### Production Mode
+
+```bash
+# Start in production mode
+export FLASK_ENV=production
+export FLASK_DEBUG=0
+gunicorn --bind 0.0.0.0:5000 \
+ --workers 4 \
+ --worker-class gevent \
+ --worker-connections 1000 \
+ app.main:app
+```
+
+#### Docker Setup
+
+```bash
+# Using Docker Compose (recommended)
+docker-compose up -d
+
+# Or using Docker directly
+docker build -t tts-gemini:latest .
+docker run -d \
+ --name tts-gemini \
+ -p 5000:5000 \
+ -e FLASK_ENV=production \
+ -e GEMINI_API_KEY=your-api-key \
+ tts-gemini:latest
+```
+
+### 🔗 Accessing Swagger Documentation
+
+Once the application is running, you can access the Swagger documentation through multiple endpoints:
+
+#### Available Documentation Endpoints
+
+| Endpoint | Description | Access Method |
+|----------|-------------|---------------|
+| `/api/v1/docs/` | Custom HTML documentation template | Web Browser |
+| `/api/v1/docs/ui` | Interactive Swagger UI | Web Browser |
+| `/api/v1/docs/swagger.json` | OpenAPI 3.0.3 specification (JSON) | API Client/Raw |
+| `/api/v1/docs/openapi.json` | OpenAPI specification (alias) | API Client/Raw |
+| `/api/v1/docs/health` | Documentation health check | API Client |
+
+#### Accessing Interactive Documentation
+
+1. **Open your web browser**
+2. **Navigate to**: `http://localhost:5000/api/v1/docs/ui`
+3. **Or use the custom template**: `http://localhost:5000/api/v1/docs/`
+
+#### Authentication Setup
+
+Before testing authenticated endpoints, you need to:
+
+1. **Register/Login** to get JWT tokens:
+  ```bash
+  # Register a new user
+  curl -X POST http://localhost:5000/api/v1/auth/register \
+    -H "Content-Type: application/json" \
+    -d '{"username": "testuser", "email": "test@example.com", "password": "password123"}'
+
+  # Login to get tokens
+  curl -X POST http://localhost:5000/api/v1/auth/login \
+    -H "Content-Type: application/json" \
+    -d '{"username": "testuser", "password": "password123"}'
+  ```
+
+2. **Use the JWT token** in Swagger UI:
+  - Click the **"Authorize"** button in Swagger UI
+  - Enter: `Bearer <your-jwt-token>`
+  - Click **"Authorize"** to enable authenticated requests
+
+3. **API Key Authentication** (alternative):
+  - Generate API key via `/api/v1/auth/api-key`
+  - Use `X-API-Key: <your-api-key>` header
+
+#### Testing API Endpoints Interactively
+
+1. **Navigate to Swagger UI**: `http://localhost:5000/api/v1/docs/ui`
+2. **Expand any endpoint** section (e.g., "Authentication", "TTS", "Business Intelligence")
+3. **Click "Try it out"** button
+4. **Fill in the required parameters**
+5. **Click "Execute"** to send the request
+6. **View the response** in the results section
+
+Example - Testing TTS Generation:
+```bash
+# Via Swagger UI:
+1. Expand "TTS" section
+2. Click "Try it out" on POST /api/v1/tts/generate
+3. Enter parameters:
+  {
+    "text": "Hello, this is a test of the TTS system",
+    "voice_name": "Alnilam",
+    "output_format": "mp3"
+  }
+4. Click "Execute"
+5. View the response with audio file URL
+```
+
+### ✨ Features and Capabilities
+
+#### Authentication Integration
+
+- **JWT Token Support** - Seamless JWT authentication
+- **API Key Authentication** - Alternative API key method
+- **Multi-tenancy Support** - Organization-based access control
+- **Role-based Permissions** - Granular access control
+
+#### Request/Response Examples
+
+All endpoints include comprehensive examples:
+
+```json
+// Example: TTS Generation Request
+{
+ "text": "Hello, world!",
+ "voice_name": "Alnilam",
+ "output_format": "mp3",
+ "speed": 1.0,
+ "pitch": 0.0,
+ "volume": 1.0
+}
+
+// Example: TTS Generation Response
+{
+ "id": "tts_123456789",
+ "status": "completed",
+ "text": "Hello, world!",
+ "voice_name": "Alnilam",
+ "output_format": "mp3",
+ "audio_url": "/api/v1/tts/tts_123456789/download",
+ "created_at": "2024-01-01T12:00:00Z",
+ "completed_at": "2024-01-01T12:00:05Z"
+}
+```
+
+#### Schema Validation
+
+- **Input Validation** - Comprehensive request validation
+- **Response Validation** - Consistent response schemas
+- **Error Handling** - Standardized error responses
+- **Type Safety** - Type hints and validation
+
+#### Error Handling Documentation
+
+Standardized error responses across all endpoints:
+
+```json
+{
+ "error": {
+   "code": "VALIDATION_ERROR",
+   "message": "Invalid input parameters",
+   "details": {
+     "text": ["Text is required", "Text must be between 1 and 5000 characters"]
+   }
+ }
+}
+```
+
+### 🔧 Troubleshooting
+
+#### Common Issues and Solutions
+
+**Issue**: Swagger UI shows "Failed to load API definition"
+```bash
+# Solution: Check if the application is running
+curl http://localhost:5000/api/v1/docs/swagger.json
+
+# Should return valid OpenAPI JSON
+```
+
+**Issue**: Authentication errors in Swagger UI
+```bash
+# Solution: Verify JWT token format
+# Token should be: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+
+# Test authentication endpoint first
+curl -X POST http://localhost:5000/api/v1/auth/login \
+ -H "Content-Type: application/json" \
+ -d '{"username": "testuser", "password": "password123"}'
+```
+
+**Issue**: Cannot access documentation endpoints
+```bash
+# Solution: Check if routes are properly registered
+curl http://localhost:5000/api/v1/docs/health
+
+# Should return: {"status": "healthy", "documentation": "available"}
+```
+
+#### Health Check Procedures
+
+1. **Basic Health Check**
+  ```bash
+  curl http://localhost:5000/api/v1/docs/health
+  ```
+
+2. **API Specification Check**
+  ```bash
+  curl http://localhost:5000/api/v1/docs/swagger.json | jq '.info.title'
+  ```
+
+3. **Interactive UI Check**
+  ```bash
+  # Open browser and navigate to:
+  # http://localhost:5000/api/v1/docs/ui
+  ```
+
+#### Performance Considerations
+
+- **Caching** - API specifications are cached for better performance
+- **CDN Assets** - Swagger UI assets loaded from CDN for faster loading
+- **Lazy Loading** - Documentation loads on-demand
+- **Compression** - Gzip compression enabled for JSON responses
+
+#### Getting Help
+
+If you encounter issues:
+
+1. **Check Application Logs**
+  ```bash
+  # View application logs
+  tail -f logs/tts_api.log
+  ```
+
+2. **Test Individual Endpoints**
+  ```bash
+  # Test health endpoint
+  curl http://localhost:5000/api/v1/health
+
+  # Test documentation endpoints
+  curl http://localhost:5000/api/v1/docs/
+  ```
+
+3. **Verify Configuration**
+  ```bash
+  # Check environment variables
+  python -c "import os; print('FLASK_ENV:', os.getenv('FLASK_ENV'))"
+  ```
+
+4. **Restart Application**
+  ```bash
+  # Restart the Flask application
+  pkill -f "flask run"
+  flask run --host=0.0.0.0 --port=5000
+  ```
+
 ## 🔧 Configuration
 
 ### Environment Variables

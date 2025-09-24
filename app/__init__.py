@@ -36,8 +36,8 @@ def create_app(config_name: Optional[str] = None) -> Flask:
     if config_name not in config_map:
         raise ValueError(f"Invalid configuration name: {config_name}")
 
-    # Create Flask app
-    app = Flask(__name__)
+    # Create Flask app with explicit template folder
+    app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), '..', 'templates'))
 
     # Load configuration
     config_class = config_map[config_name]
@@ -57,6 +57,14 @@ def create_app(config_name: Optional[str] = None) -> Flask:
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     app.register_blueprint(tts_bp, url_prefix='/api/v1/tts')
     app.register_blueprint(bi_bp, url_prefix='/api/v1/bi')
+
+    # Register documentation blueprints
+    from routes.docs import docs_bp
+    app.register_blueprint(docs_bp)
+
+    # Initialize Swagger documentation
+    from .swagger import init_swagger
+    init_swagger(app)
 
     # Health check endpoint
     @app.route('/api/v1/health', methods=['GET'])
